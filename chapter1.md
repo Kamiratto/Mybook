@@ -11,10 +11,6 @@
 * 6
 * 7
 
-
-
-
-
 * [ ] 2423
 
 > eqweqwe
@@ -54,216 +50,226 @@ import sanlogic.vdi.sys.service.LogService;
 @Aspect
 public class LogAspect {
 
-	@Autowired
-	private LogService logService;
+    @Autowired
+    private LogService logService;
 
-	/**
-	 * 添加业务逻辑方法切入点
-	 */
-	@Pointcut("execution(* sanlogic.vdi.sys.service.*.save(..))")
-	public void insertServiceCall() {
-	}
+    /**
+     * 添加业务逻辑方法切入点
+     */
+    @Pointcut("execution(* sanlogic.vdi.sys.service.*.save(..))")
+    public void insertServiceCall() {
+    }
 
-	/**
-	 * 修改业务逻辑方法切入点
-	 */
-	@Pointcut("execution(* sanlogic.vdi.sys.service.*.save(..))")
-	public void updateServiceCall() {
-	}
+    /**
+     * 修改业务逻辑方法切入点
+     */
+    @Pointcut("execution(* sanlogic.vdi.sys.service.*.save(..))")
+    public void updateServiceCall() {
+    }
 
-	/**
-	 * 删除业务逻辑方法切入点
-	 */
-	@Pointcut("execution(* sanlogic.vdi.sys.service.*.delete(..))")
-	public void deleteFilmCall() {
-	}
+    /**
+     * 删除业务逻辑方法切入点
+     */
+    @Pointcut("execution(* sanlogic.vdi.sys.service.*.delete(..))")
+    public void deleteFilmCall() {
+    }
 
-	/**
-	 * 管理员添加操作日志(后置通知)
-	 * 
-	 * @param joinPoint
-	 * @param rtv
-	 * @throws Throwable
-	 */
-	@AfterReturning(value = "insertServiceCall()", returning = "rtv")
-	public void insertServiceCallCalls(JoinPoint joinPoint, Object rtv)
-			throws Throwable {
+    /**
+     * 管理员添加操作日志(后置通知)
+     * 
+     * @param joinPoint
+     * @param rtv
+     * @throws Throwable
+     */
+    @AfterReturning(value = "insertServiceCall()", returning = "rtv")
+    public void insertServiceCallCalls(JoinPoint joinPoint, Object rtv)
+            throws Throwable {
 
-		addLog(joinPoint, rtv, "插入");
-	}
+        addLog(joinPoint, rtv, "插入");
+    }
 
-	/**
-	 * 管理员修改操作日志(后置通知)
-	 * 
-	 * @param joinPoint
-	 * @param rtv
-	 * @throws Throwable
-	 */
-	@AfterReturning(value = "updateServiceCall()", argNames = "rtv", returning = "rtv")
-	public void updateServiceCallCalls(JoinPoint joinPoint, Object rtv)
-			throws Throwable {
+    /**
+     * 管理员修改操作日志(后置通知)
+     * 
+     * @param joinPoint
+     * @param rtv
+     * @throws Throwable
+     */
+    @AfterReturning(value = "updateServiceCall()", argNames = "rtv", returning = "rtv")
+    public void updateServiceCallCalls(JoinPoint joinPoint, Object rtv)
+            throws Throwable {
 
-		addLog(joinPoint, rtv, "更新");
-	}
+        addLog(joinPoint, rtv, "更新");
+    }
 
-	/**
-	 * 管理员删除影片操作(环绕通知)，使用环绕通知的目的是 在影片被删除前可以先查询出影片信息用于日志记录
-	 * 
-	 * @param joinPoint
-	 * @param rtv
-	 * @throws Throwable
-	 */
-	/*@Around(value = "deleteFilmCall()", argNames = "rtv")
-	public Object deleteFilmCallCalls(ProceedingJoinPoint pjp) throws Throwable {
+    /**
+     * 管理员删除影片操作(环绕通知)，使用环绕通知的目的是 在影片被删除前可以先查询出影片信息用于日志记录
+     * 
+     * @param joinPoint
+     * @param rtv
+     * @throws Throwable
+     */
+    /*@Around(value = "deleteFilmCall()", argNames = "rtv")
+    public Object deleteFilmCallCalls(ProceedingJoinPoint pjp) throws Throwable {
 
-		
-		
-		
-		Object result = null;
-		// 环绕通知处理方法
-		try {
 
-			// 获取方法参数(被删除的影片id)
-			Integer id = (Integer) pjp.getArgs()[0];
-			Film obj = null;// 影片对象
-			if (id != null) {
-				// 删除前先查询出影片对象
-				obj = filmService.getFilmById(id);
-			}
 
-			// 执行删除影片操作
-			result = pjp.proceed();
 
-			if (obj != null) {
+        Object result = null;
+        // 环绕通知处理方法
+        try {
 
-				// 创建日志对象
-				Log log = new Log();
-				log.setUserid(logService.loginUserId());// 用户编号
-				log.setCreatedate(new Date());// 操作时间
+            // 获取方法参数(被删除的影片id)
+            Integer id = (Integer) pjp.getArgs()[0];
+            Film obj = null;// 影片对象
+            if (id != null) {
+                // 删除前先查询出影片对象
+                obj = filmService.getFilmById(id);
+            }
 
-				StringBuffer msg = new StringBuffer("影片名 : ");
-				msg.append(obj.getFname());
-				log.setContent(msg.toString());// 操作内容
+            // 执行删除影片操作
+            result = pjp.proceed();
 
-				log.setOperation("删除");// 操作
+            if (obj != null) {
 
-				logService.log(log);// 添加日志
-			}
+                // 创建日志对象
+                Log log = new Log();
+                log.setUserid(logService.loginUserId());// 用户编号
+                log.setCreatedate(new Date());// 操作时间
 
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+                StringBuffer msg = new StringBuffer("影片名 : ");
+                msg.append(obj.getFname());
+                log.setContent(msg.toString());// 操作内容
 
-		return result;
-	}*/
+                log.setOperation("删除");// 操作
 
-	/**
-	 * 使用Java反射来获取被拦截方法(insert、update)的参数值， 将参数值拼接为操作内容
-	 */
-	public String adminOptionContent(Object[] args, String mName)
-			throws Exception {
+                logService.log(log);// 添加日志
+            }
 
-		if (args == null) {
-			return null;
-		}
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
-		StringBuffer rs = new StringBuffer();
-		rs.append(mName);
-		String className = null;
-		int index = 1;
-		// 遍历参数对象
-		for (Object info : args) {
+        return result;
+    }*/
 
-			// 获取对象类型
-			className = info.getClass().getName();
-			className = className.substring(className.lastIndexOf(".") + 1);
-			rs.append("[参数" + index + "，类型：" + className + "，值：");
+    /**
+     * 使用Java反射来获取被拦截方法(insert、update)的参数值， 将参数值拼接为操作内容
+     */
+    public String adminOptionContent(Object[] args, String mName)
+            throws Exception {
 
-			// 获取对象的所有方法
-			Method[] methods = info.getClass().getDeclaredMethods();
+        if (args == null) {
+            return null;
+        }
 
-			// 遍历方法，判断get方法
-			for (Method method : methods) {
+        StringBuffer rs = new StringBuffer();
+        rs.append(mName);
+        String className = null;
+        int index = 1;
+        // 遍历参数对象
+        for (Object info : args) {
 
-				String methodName = method.getName();
-				// 判断是不是get方法
-				if (methodName.indexOf("get") == -1) {// 不是get方法
-					continue;// 不处理
-				}
+            // 获取对象类型
+            className = info.getClass().getName();
+            className = className.substring(className.lastIndexOf(".") + 1);
+            rs.append("[参数" + index + "，类型：" + className + "，值：");
 
-				Object rsValue = null;
-				try {
+            // 获取对象的所有方法
+            Method[] methods = info.getClass().getDeclaredMethods();
 
-					// 调用get方法，获取返回值
-					rsValue = method.invoke(info);
+            // 遍历方法，判断get方法
+            for (Method method : methods) {
 
-					if (rsValue == null) {// 没有返回值
-						continue;
-					}
+                String methodName = method.getName();
+                // 判断是不是get方法
+                if (methodName.indexOf("get") == -1) {// 不是get方法
+                    continue;// 不处理
+                }
 
-				} catch (Exception e) {
-					continue;
-				}
+                Object rsValue = null;
+                try {
 
-				// 将值加入内容中
-				rs.append("(" + methodName + " : " + rsValue + ")");
-			}
+                    // 调用get方法，获取返回值
+                    rsValue = method.invoke(info);
 
-			rs.append("]");
+                    if (rsValue == null) {// 没有返回值
+                        continue;
+                    }
 
-			index++;
-		}
+                } catch (Exception e) {
+                    continue;
+                }
 
-		return rs.toString();
-	}
+                // 将值加入内容中
+                rs.append("(" + methodName + " : " + rsValue + ")");
+            }
 
-	/**
-	 * @description 添加业务日志通用方法
-	 * @return void
-	 * @param joinPoint
-	 * @param rtv
-	 * @param operate
-	 * @throws Exception
-	 * @update 2013-4-18
-	 */
-	public void addLog(JoinPoint joinPoint, Object rtv, String operate)
-			throws Exception {
-		// 获取登录管理员id
-		String adminUserId = logService.getCurrentUserID();
+            rs.append("]");
 
-		if (StringUtils.isEmpty(adminUserId)) {// 没有管理员登录
-			return;
-		}
+            index++;
+        }
 
-		// 判断参数
-		if (joinPoint.getArgs() == null) {// 没有参数
-			return;
-		}
+        return rs.toString();
+    }
 
-		// 获取方法名
-		String methodName = joinPoint.getSignature().getName();
+    /**
+     * @description 添加业务日志通用方法
+     * @return void
+     * @param joinPoint
+     * @param rtv
+     * @param operate
+     * @throws Exception
+     * @update 2013-4-18
+     */
+    public void addLog(JoinPoint joinPoint, Object rtv, String operate)
+            throws Exception {
+        // 获取登录管理员id
+        String adminUserId = logService.getCurrentUserID();
 
-		// 获取操作内容
-		String opContent = adminOptionContent(joinPoint.getArgs(), methodName);
+        if (StringUtils.isEmpty(adminUserId)) {// 没有管理员登录
+            return;
+        }
 
-		HttpServletRequest request = ContextHolderUtils.getRequest();
-		String broswer = BrowserUtils.checkBrowse(request);
-		// 创建日志对象
-		LogDto logDto = new LogDto();
-		logDto.setUserId(adminUserId);// 设置管理员id
-		logDto.setLogContent(opContent);// 操作内容
-		logDto.setLogLevel(CommonConstant.Log_Leavel_INFO);// 操作级别
-		logDto.setOperateType(CommonConstant.Log_Type_INSERT);// 操作类型
-		logDto.setNote(oConvertUtils.getIp());// 操作人员IP
-		logDto.setBroswer(broswer);// 操作员浏览器
-		logDto.setOperateTime(new Date());// 操作时间
+        // 判断参数
+        if (joinPoint.getArgs() == null) {// 没有参数
+            return;
+        }
 
-		logService.save(logDto);// 添加日志
-	}
+        // 获取方法名
+        String methodName = joinPoint.getSignature().getName();
+
+        // 获取操作内容
+        String opContent = adminOptionContent(joinPoint.getArgs(), methodName);
+
+        HttpServletRequest request = ContextHolderUtils.getRequest();
+        String broswer = BrowserUtils.checkBrowse(request);
+        // 创建日志对象
+        LogDto logDto = new LogDto();
+        logDto.setUserId(adminUserId);// 设置管理员id
+        logDto.setLogContent(opContent);// 操作内容
+        logDto.setLogLevel(CommonConstant.Log_Leavel_INFO);// 操作级别
+        logDto.setOperateType(CommonConstant.Log_Type_INSERT);// 操作类型
+        logDto.setNote(oConvertUtils.getIp());// 操作人员IP
+        logDto.setBroswer(broswer);// 操作员浏览器
+        logDto.setOperateTime(new Date());// 操作时间
+
+        logService.save(logDto);// 添加日志
+    }
 
 }
-
 ```
 
+3213$$x = y$$1321 $$x = y$$
 
+---
+
+| q | e |  |  |  |
+| :--- | :--- | :--- | :--- | :--- |
+| w | r |  |  |  |
+|  |  |  |  |  |
+
+[^1]: Enter footnote here.[^2]
+
+[^2]: Enter footnote here.
 
