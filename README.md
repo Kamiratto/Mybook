@@ -1,3 +1,14 @@
-# My Awesome Book
+## Markdown 语法的简要规则
 
-This file file serves as your book's preface, a great place to describe your book's content and ideas.
+### 标题:
+
+标题是每篇文章都需要也是最常使用的格式，在markdown中，如果一段文字被定义为标题，只需要在文字前添加\#号即可。如下，最多六级标题。
+
+\# 一级标题
+
+\#\#二级标题
+
+
+
+
+
